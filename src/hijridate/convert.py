@@ -5,6 +5,8 @@ import datetime
 from bisect import bisect
 from typing import Tuple
 
+from dateutil.relativedelta import relativedelta
+
 from hijridate import helpers, locales, ummalqura
 
 
@@ -69,6 +71,42 @@ class Hijri:
         if not isinstance(other, Hijri):
             return NotImplemented
         return self._compare(other) <= 0
+
+
+    def __add__(self, delta) -> "Hijri":
+        if type(delta) is datetime.timedelta:
+            return (self.to_gregorian() + delta).to_hijri()
+        if type(delta) is relativedelta:
+            current_date = self
+            if delta.day:
+                current_date = (self.to_gregorian() + datetime.timedelta(delta.day)).to_hijri()
+            if delta.month and delta.month > 0:
+                current_date._month += delta.month
+                while current_date._month > 12:
+                    current_date._year += 1
+                    current_date._month -= 12
+
+            if delta.year and delta.year > 0:
+                current_date._year += delta.year
+            return current_date
+
+    def __sub__(self, delta) -> "Hijri":
+        if type(delta) is datetime.timedelta:
+            return (self.to_gregorian() - delta).to_hijri()
+        if type(delta) is relativedelta:
+            current_date = self
+            if delta.day:
+                current_date = (self.to_gregorian() - datetime.timedelta(delta.day)).to_hijri()
+            if delta.month and delta.month > 0:
+                current_date._month -= delta.month
+                while current_date._month <= 0:
+                    current_date._year -= 1
+                    current_date._month += 12
+
+            if delta.year and delta.year > 0:
+                current_date._year -= delta.year
+            return current_date
+
 
     def _compare(self, other: "Hijri") -> int:
         self_date = self.datetuple()
