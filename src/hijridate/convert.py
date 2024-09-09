@@ -80,14 +80,14 @@ class Hijri:
             current_date = self
             if delta.day:
                 current_date = (self.to_gregorian() + datetime.timedelta(delta.day)).to_hijri()
-            if delta.month and delta.month > 0:
-                current_date._month += delta.month
+            if delta.months and delta.months > 0:
+                current_date._month += delta.months
                 while current_date._month > 12:
                     current_date._year += 1
                     current_date._month -= 12
 
-            if delta.year and delta.year > 0:
-                current_date._year += delta.year
+            if delta.years and delta.years > 0:
+                current_date._year += delta.years
             return current_date
 
     def __sub__(self, delta) -> "Hijri":
@@ -97,14 +97,14 @@ class Hijri:
             current_date = self
             if delta.day:
                 current_date = (self.to_gregorian() - datetime.timedelta(delta.day)).to_hijri()
-            if delta.month and delta.month > 0:
-                current_date._month -= delta.month
+            if delta.months and delta.months > 0:
+                current_date._month -= delta.months
                 while current_date._month <= 0:
                     current_date._year -= 1
                     current_date._month += 12
 
-            if delta.year and delta.year > 0:
-                current_date._year -= delta.year
+            if delta.years and delta.years > 0:
+                current_date._year -= delta.years
             return current_date
 
 
