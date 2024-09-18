@@ -173,7 +173,7 @@ class Hijri:
         """Return number of days in month."""
         month_starts = ummalqura.MONTH_STARTS
         index = self._month_index()
-        return month_starts[index + 1] - month_starts[index]
+        return month_starts[index + 1] - month_starts[index] - 1
 
     def month_name(self, language: locales.Language = "en") -> str:
         """Return month name.
