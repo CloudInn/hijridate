@@ -1,7 +1,8 @@
 """Main module of the HijriDate package."""
 
-import datetime
+from datetime import timedelta
 
+from copy import deepcopy
 from bisect import bisect
 from typing import Tuple
 
@@ -72,39 +73,91 @@ class Hijri:
             return NotImplemented
         return self._compare(other) <= 0
 
-    def __add__(self, delta) -> "Hijri":
-        if isinstance(delta, datetime.timedelta):
-            return (self.to_gregorian() + delta).to_hijri()
-        if isinstance(delta, relativedelta):
-            current_date = self
-            if delta.day:
-                current_date = (self.to_gregorian() + datetime.timedelta(delta.day)).to_hijri()
-            if delta.months and delta.months > 0:
-                current_date._month += delta.months
-                while current_date._month > 12:
-                    current_date._year += 1
-                    current_date._month -= 12
+    def __add__(self, delta):
+        if isinstance(delta, timedelta):
+            # Extract days from timedelta
+            days = delta.days
+            years = months = 0
+        elif isinstance(delta, relativedelta):
+            years = delta.years or 0
+            months = delta.months or 0
+            days = delta.days or 0
+        else:
+            raise TypeError("Unsupported type for addition")
 
-            if delta.years and delta.years > 0:
-                current_date._year += delta.years
-            return current_date
+        if years < 0 or months < 0 or days < 0:
+            raise ValueError("Negative intervals are not supported in this implementation")
 
-    def __sub__(self, delta) -> "Hijri":
-        if isinstance(delta, datetime.timedelta):
-            return (self.to_gregorian() - delta).to_hijri()
-        if isinstance(delta, relativedelta):
-            current_date = self
-            if delta.day:
-                current_date = (self.to_gregorian() - datetime.timedelta(delta.day)).to_hijri()
-            if delta.months and delta.months > 0:
-                current_date._month -= delta.months
-                while current_date._month <= 0:
-                    current_date._year -= 1
-                    current_date._month += 12
+        new_date = deepcopy(self)
 
-            if delta.years and delta.years > 0:
-                current_date._year -= delta.years
-            return current_date
+        if years != 0:
+            new_date._year += years
+
+        if months != 0:
+            new_date._month += months
+            while new_date._month > 12:
+                new_date._month -= 12
+                new_date._year += 1
+
+        max_day = new_date.month_length()
+        if new_date._day > max_day:
+            new_date._day = max_day
+
+        if days != 0:
+            new_date._day += days
+            while True:
+                max_day = new_date.month_length()
+                if new_date._day > max_day:
+                    new_date._day -= max_day
+                    new_date._month += 1
+                    if new_date._month > 12:
+                        new_date._month = 1
+                        new_date._year += 1
+                else:
+                    break
+
+        return new_date
+
+    def __sub__(self, delta):
+        if isinstance(delta, timedelta):
+            days = delta.days
+            years = months = 0
+        elif isinstance(delta, relativedelta):
+            years = delta.years or 0
+            months = delta.months or 0
+            days = delta.days or 0
+        else:
+            raise TypeError("Unsupported type for subtraction")
+
+        if years < 0 or months < 0 or days < 0:
+            raise ValueError("Negative intervals are not supported in this implementation")
+
+        new_date = deepcopy(self)
+
+        if years > 0:
+            new_date._year -= years
+
+        if months > 0:
+            new_date._month -= months
+            while new_date._month <= 0:
+                new_date._year -= 1
+                new_date._month += 12
+
+        if days > 0:
+            new_date._day -= days
+            while new_date._day <= 0:
+                new_date._month -= 1
+                if new_date._month <= 0:
+                    new_date._year -= 1
+                    new_date._month = 12
+                max_day = new_date.month_length()
+                new_date._day += max_day
+
+        max_day = new_date.month_length()
+        if new_date._day > max_day:
+            new_date._day = max_day
+
+        return new_date
 
     def _compare(self, other: "Hijri") -> int:
         self_date = self.datetuple()
