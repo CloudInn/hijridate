@@ -72,11 +72,10 @@ class Hijri:
             return NotImplemented
         return self._compare(other) <= 0
 
-
     def __add__(self, delta) -> "Hijri":
-        if type(delta) is datetime.timedelta:
+        if isinstance(delta, datetime.timedelta):
             return (self.to_gregorian() + delta).to_hijri()
-        if type(delta) is relativedelta:
+        if isinstance(delta, relativedelta):
             current_date = self
             if delta.day:
                 current_date = (self.to_gregorian() + datetime.timedelta(delta.day)).to_hijri()
@@ -91,9 +90,9 @@ class Hijri:
             return current_date
 
     def __sub__(self, delta) -> "Hijri":
-        if type(delta) is datetime.timedelta:
+        if isinstance(delta, datetime.timedelta):
             return (self.to_gregorian() - delta).to_hijri()
-        if type(delta) is relativedelta:
+        if isinstance(delta, relativedelta):
             current_date = self
             if delta.day:
                 current_date = (self.to_gregorian() - datetime.timedelta(delta.day)).to_hijri()
@@ -106,7 +105,6 @@ class Hijri:
             if delta.years and delta.years > 0:
                 current_date._year -= delta.years
             return current_date
-
 
     def _compare(self, other: "Hijri") -> int:
         self_date = self.datetuple()
