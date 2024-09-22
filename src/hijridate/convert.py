@@ -74,9 +74,10 @@ class Hijri:
         return self._compare(other) <= 0
 
     def __add__(self, delta):
+        new_hijri_date = deepcopy(self)
         if isinstance(delta, datetime.timedelta):
-            days = delta.days
-            years = months = 0
+            days = years = months = 0
+            new_hijri_date = (new_hijri_date.to_gregorian() + delta).to_hijri()
         elif isinstance(delta, relativedelta):
             years = delta.years or 0
             months = delta.months or 0
@@ -87,7 +88,6 @@ class Hijri:
         if years < 0 or months < 0 or days < 0:
             raise ValueError("Negative intervals are not supported in this implementation")
 
-        new_hijri_date = deepcopy(self)
 
         if years > 0:
             new_hijri_date._year += years
@@ -115,9 +115,10 @@ class Hijri:
         return new_hijri_date
 
     def __sub__(self, delta):
+        new_hijri_date = deepcopy(self)
         if isinstance(delta, datetime.timedelta):
-            days = delta.days
-            years = months = 0
+            days = years = months = 0
+            new_hijri_date = (new_hijri_date.to_gregorian() - delta).to_hijri()
         elif isinstance(delta, relativedelta):
             years = delta.years or 0
             months = delta.months or 0
@@ -127,8 +128,6 @@ class Hijri:
 
         if years < 0 or months < 0 or days < 0:
             raise TypeError("Unsupported operand type(s) for -: 'Hijri' and '{}'".format(type(delta).__name__))
-
-        new_hijri_date = deepcopy(self)
 
         if years > 0:
             new_hijri_date._year -= years
