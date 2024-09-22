@@ -159,6 +159,11 @@ class Hijri:
             new_hijri_date._day = max_day
         return new_hijri_date
 
+    def _compare(self, other: "Hijri") -> int:
+        self_date = self.datetuple()
+        other_date = other.datetuple()
+        return 0 if self_date == other_date else 1 if self_date > other_date else -1
+
     @classmethod
     def fromisoformat(cls, date_string: str) -> "Hijri":
         """Construct Hijri object from an ISO formatted Hijri date.
