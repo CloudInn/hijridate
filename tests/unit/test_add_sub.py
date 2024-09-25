@@ -84,3 +84,43 @@ class HijriDateTests(TestCase):
         new_date = original_date - delta
         expected_date = Hijri(1446, 11, 23)
         self.assertEqual(new_date.isoformat(), expected_date.isoformat(), "Subtracting 50 days failed.")
+
+    def test_subtracting_month_resulting_in_previous_year(self):
+        # 1447-01-05, subtracting 1 month should give us 1446-12-05
+        original_date = Hijri(1447, 1, 5)
+        delta = relativedelta(months=1)
+        new_date = original_date - delta
+        expected_date = Hijri(1446, 12, 5)
+        self.assertEqual(new_date.isoformat(), expected_date.isoformat(), "Subtracting 1 months failed.")
+
+    def test_subtracting_days_resulting_in_previous_month(self):
+        # 1447-01-05, subtracting 10 days should give us 1446-12-24
+        original_date = Hijri(1447, 1, 5)
+        delta = relativedelta(days=10)
+        new_date = original_date - delta
+        expected_date = Hijri(1446, 12, 24)
+        self.assertEqual(new_date.isoformat(), expected_date.isoformat(), "Subtracting 10 days failed.")
+
+    def test_subtracting_multiple_months(self):
+        # 1447-03-15, subtracting 4 months should give us 1446-11-15
+        original_date = Hijri(1447, 3, 15)
+        delta = relativedelta(months=4)
+        new_date = original_date - delta
+        expected_date = Hijri(1446, 11, 15)
+        self.assertEqual(new_date.isoformat(), expected_date.isoformat(), "Subtracting 4 months failed.")
+
+    def test_subtracting_large_number_of_days(self):
+        # 1447-03-01, subtracting 90 days should give us 1446-12-01
+        original_date = Hijri(1447, 3, 1)
+        delta = relativedelta(days=90)
+        new_date = original_date - delta
+        expected_date = Hijri(1446, 11, 28)
+        self.assertEqual(new_date.isoformat(), expected_date.isoformat(), "Subtracting 90 days failed.")
+
+    def test_subtracting_one_month(self):
+        # Assuming 1447 is a leap year, subtracting 1 month from 1447-12-30 should give us 1447-11-30
+        original_date = Hijri(1445, 12, 30)
+        delta = relativedelta(months=1)
+        new_date = original_date - delta
+        expected_date = Hijri(1447, 11, 29)
+        self.assertEqual(new_date.isoformat(), expected_date.isoformat(), "Subtracting 1 month failed.")
