@@ -82,6 +82,8 @@ class Hijri:
             years = delta.years or 0
             months = delta.months or 0
             days = delta.days or 0
+            new_hijri_date = (new_hijri_date.to_gregorian() + datetime.timedelta(days)).to_hijri()
+            days = 0 
         else:
             raise TypeError("Unsupported type for addition")
 
@@ -101,17 +103,6 @@ class Hijri:
         max_day = new_hijri_date.month_length()
         if new_hijri_date._day > max_day:
             new_hijri_date._day = max_day
-
-        if days > 0:
-            new_hijri_date._day += days
-            while True:
-                max_day = max_day = new_hijri_date.month_length()
-                if new_hijri_date._day > max_day:
-                    new_hijri_date._day = new_hijri_date._day - max_day
-                    new_hijri_date._month = new_hijri_date._month + 1
-                    if new_hijri_date._month > 12:
-                        new_hijri_date._month = 1
-                        new_hijri_date._year = new_hijri_date._year + 1
         return new_hijri_date
 
     def __sub__(self, delta):
@@ -123,6 +114,8 @@ class Hijri:
             years = delta.years or 0
             months = delta.months or 0
             days = delta.days or 0
+            new_hijri_date = (new_hijri_date.to_gregorian() - datetime.timedelta(days)).to_hijri()
+            days = 0 
         else:
             raise TypeError("Unsupported type for addition")
 
@@ -141,16 +134,6 @@ class Hijri:
         max_day = new_hijri_date.month_length()
         if new_hijri_date._day > max_day:
             new_hijri_date._day = max_day
-
-        if days > 0:
-            new_hijri_date._day -= days
-            while new_hijri_date._day <= 0:
-                new_hijri_date._month -= 1
-                if new_hijri_date._month <= 0:
-                    new_hijri_date._year -= 1
-                    new_hijri_date._month = 12
-                max_day = new_hijri_date.month_length()
-                new_hijri_date._day = max_day
 
         max_day = new_hijri_date.month_length()
 
