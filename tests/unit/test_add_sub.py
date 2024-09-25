@@ -118,9 +118,8 @@ class HijriDateTests(TestCase):
         self.assertEqual(new_date.isoformat(), expected_date.isoformat(), "Subtracting 90 days failed.")
 
     def test_subtracting_one_month(self):
-        # Assuming 1447 is a leap year, subtracting 1 month from 1447-12-30 should give us 1447-11-30
         original_date = Hijri(1445, 12, 30)
         delta = relativedelta(months=1)
         new_date = original_date - delta
-        expected_date = Hijri(1447, 11, 29)
+        expected_date = Hijri(1445, 11, 29)
         self.assertEqual(new_date.isoformat(), expected_date.isoformat(), "Subtracting 1 month failed.")
